@@ -1,0 +1,144 @@
+//На вход подаются сведения о клиетах фитнес-центра. В первой строке указывается код К одного из клиентов, во второй строке - целое число N, а каждая из
+//последующих N строк имеет формат <Код клиента (10-99)> <Продолжительность занятий (в часах, 1-30)> <Год (2000-2010)> <Номер месяца>.
+//Все данные целочисленные. Ждя каждого года, в котором клиент с кодом К посещал центр, определить месяц в котором продолжительность занятий данного клиента
+//была наибольшей для данного года (если таких месяцев несколько, то выбирать месяц с наименьшим номером). Сведения о каждом годе выводить на новой строке
+//в следующем порядке: наибольшая продолжительность занятий в году, год, номер месяца. Упорядочивать сведения по убыванию продолжительности занятий,
+//а при равной продолжительности - по возрастанию номера года. Если данные о клиенте с кодом К отсутствуют, то ввывести строку "No data".
+
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <string>
+#include <algorithm>
+#include <iomanip>
+#include "pt4exam.h"
+using namespace std;
+
+struct Person {
+    int length;
+    int year;
+    int month;
+};
+
+struct Help {
+    int length;
+    int year;
+    int month;
+};
+
+int code(string s) {
+    string sup;
+    for (int i = 0; i < 2; i++) {
+        sup += s[i];
+    }
+    return stoi(sup);
+}
+
+int length(string s) {
+    string sup;
+    for (int i = 3; i < s.size(); i++) {
+        if (s[i] == ' ') i = s.size();
+        else sup += s[i];
+    }
+    return stoi(sup);
+}
+
+int year(string s, int x) {
+    string sup;
+    for (int i = 4 + x; i < s.size(); i++) {
+        if (s[i] == ' ') i = s.size();
+        else sup += s[i];
+    }
+    return stoi(sup);
+}
+
+int month(string s, int x) {
+    string sup;
+    for (int i = 9 + x; i < s.size(); i++) sup += s[i];
+    return stoi(sup);
+}
+
+int sort(Person** p, int n, int YEAR) {
+    int len = 0, num = -1;
+    for (int i = 0; i < n; i++) {
+        if (p[i]->year == YEAR) {
+            if (len < p[i]->length) len = p[i]->length, num = i;
+        }
+    }
+    return num;
+}
+
+void Sort(Help** p, int n) {
+    Help* temp;
+    for (int i = n - 1; i > 0; i--) {
+        for (int j = 0; j < i; j++) {
+            if (p[j]->length < p[j + 1]->length) {
+                temp = p[j];
+                p[j] = p[j + 1];
+                p[j + 1] = temp;
+            }
+            else if (p[j]->length == p[j + 1]->length) {
+                if (p[j]->year > p[j + 1]->year) {
+                    temp = p[j];
+                    p[j] = p[j + 1];
+                    p[j + 1] = temp;
+                }
+                else if (p[j]->year == p[j + 1]->year) {
+                    if (p[j]->month >= p[j + 1]->month) {
+                        temp = p[j];
+                        p[j] = p[j + 1];
+                        p[j + 1] = temp;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Для ввода используйте поток cin
+// Для вывода используйте поток cout
+// Между полученными результатами надо выводить символ пробела
+void Solve()
+{
+    Task("ExamExt15");
+    int CODE;
+    int n, y = 0, z = 0;
+    cin >> CODE;
+    cin >> n;
+    cin.ignore();
+    Person* fitness = new Person[n];
+    for (int i = 0; i < n; i++) {
+        string s;
+        int x;
+        getline(cin, s);
+        if (code(s) == CODE) {
+            fitness[z].length = length(s);
+            if (length(s) < 10) x = 1;
+            else x = 2;
+            fitness[z].year = year(s, x);
+            fitness[z].month = month(s, x);
+            z++;
+        }
+        else y++;
+    }
+    if (y == n) cout << "No data";
+    else {
+        int num, v = 0;
+        Person** p = new Person * [z];
+        for (int i = 0; i < z; i++) p[i] = &fitness[i];
+        Help* pom = new Help[z];
+        for (int i = 2000; i < 2011; i++) {
+            num = sort(p, z, i);
+            if (num != -1) {
+                pom[v].length = p[num]->length;
+                pom[v].year = p[num]->year;
+                pom[v].month = p[num]->month;
+                v++;
+            }
+        }
+        Help** o = new Help * [v];
+        for (int i = 0; i < v; i++) o[i] = &pom[i];
+        Sort(o, v);
+        for (int i = 0; i < v; i++) cout << o[i]->length << ' ' << o[i]->year << ' ' << o[i]->month << endl;
+    }
+}
