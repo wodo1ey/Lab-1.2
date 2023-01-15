@@ -1,0 +1,29 @@
+//Дан файл целых чисел. Удвоить его размер, записав в конец файла все его исходные элементы (в обратном порядке).
+
+#include <iostream>
+#include <iomanip>
+#include <time.h>
+#include <fstream>
+#include <algorithm>
+
+using namespace std;
+
+void main()
+{
+    string fn1;
+    cin >> fn1;
+    ifstream file1(fn1);
+    int size = 0;
+    int* mas;
+    mas = new int[size];
+    int i = 0;
+    while (!file1.eof()) {
+        size++;
+        file1 >> mas[i];
+        i++;
+    }
+    file1.close();
+    ofstream file2(fn1);
+    for (int j = 0; j < size; j++) file2 << mas[j] << ' ';
+    for (int j = size - 1; j >= 0; j--) file2 << mas[j] << ' ';
+}
