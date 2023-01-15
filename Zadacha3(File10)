@@ -1,0 +1,27 @@
+//Дан файл целых чисел. Создать новый файл, содержащий те же эелементы, что и исходный файл, но в обратном порядке.
+
+#include <iostream>
+#include <iomanip>
+#include <time.h>
+#include <fstream>
+#include <algorithm>
+
+using namespace std;
+
+void main()
+{
+    string fn1, fn2;
+    cin >> fn1 >> fn2;
+    ifstream file1(fn1);
+    ofstream file2(fn2);
+    int size = 0;
+    int* mas;
+    mas = new int[size];
+    int i = 0;
+    while (!file1.eof()) {
+        size++;
+        file1 >> mas[i];
+        i++;
+    }
+    for (int j = size - 1; j >= 0; j--) file2 << mas[j] << ' ';
+}
