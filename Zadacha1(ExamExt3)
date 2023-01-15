@@ -1,0 +1,110 @@
+//На вход опдаются сведения о клиентах фитнес-центра. В первой строке указывается целое число nб а каждая из последующих n строк имеет формат:
+//<Продолжительность занятий (в часах, 1-30)> <Код клиента (10-99)> <Год (2000-2010)> <Месяц>. Найти строку исходных данных с минимальной продолжительностью
+//занятий. Вывести эту продолжительность, а также соответствующие ей год и номер месяца (в указанном порядке). Если имеется несколько строк с минимальной
+//продолжительностью, то вывести данные, соответствующие самой ранней дате. Каждое число выводить на новой строке.
+
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <iomanip>
+#include "pt4exam.h"
+using namespace std;
+
+struct Person {
+    int length;
+    int code;
+    int year;
+    int month;
+};
+
+int length(string s) {
+    string sup;
+    for (int i = 0; i < 2; i++) {
+        if (s[i] == ' ') i = 2;
+        else sup += s[i];
+    }
+    return stoi(sup);
+}
+
+int code(string s, int x) {
+    string sup;
+    for (int i = 1 + x; i < s.size(); i++) {
+        if (s[i] == ' ') i = s.size();
+        else sup += s[i];
+    }
+    return stoi(sup);
+}
+
+int year(string s, int x) {
+    string sup;
+    for (int i = 4 + x; i < s.size(); i++) {
+        if (s[i] == ' ') i = s.size();
+        else sup += s[i];
+    }
+    return stoi(sup);
+}
+
+int month(string s, int x) {
+    string sup;
+    for (int i = 9 + x; i < s.size(); i++) {
+        sup += s[i];
+    }
+    return stoi(sup);
+}
+
+void Sort(Person** p, int n) {
+    Person *temp;
+    for (int i = n - 1; i > 0; i--) {
+        for (int j = 0; j < i; j++) {
+            if (p[j]->length > p[j + 1]->length) {
+                temp = p[j];
+                p[j] = p[j + 1];
+                p[j + 1] = temp;
+            }
+            else if (p[j]->length == p[j + 1]->length) {
+                if (p[j]->year > p[j + 1]->year) {
+                    temp = p[j];
+                    p[j] = p[j + 1];
+                    p[j + 1] = temp;
+                }
+                else if (p[j]->year == p[j + 1]->year) {
+                    if (p[j]->month >= p[j + 1]->month) {
+                        temp = p[j];
+                        p[j] = p[j + 1];
+                        p[j + 1] = temp;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Для ввода используйте поток cin
+// Для вывода используйте поток cout
+void Solve()
+{
+    Task("ExamExt3");
+    int n;
+    cin >> n;
+    cin.ignore();
+    Person* fitness = new Person[n];
+    for (int i = 0; i < n; i++) {
+        string s;
+        int x;
+        getline(cin, s);
+        fitness[i].length = length(s);
+        if (fitness[i].length < 10) x = 1;
+        else x = 2;
+        fitness[i].code = code(s, x);
+        fitness[i].year = year(s, x);
+        fitness[i].month = month(s, x);
+    }
+    Person** p = new Person * [n];
+    for (int i = 0; i < n; i++) p[i] = &fitness[i];
+    Sort(p, n);
+    cout << p[0]->length << endl;
+    cout << p[0]->year << endl;
+    cout << p[0]->month << endl;
+}
